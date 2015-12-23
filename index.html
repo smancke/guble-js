@@ -9,11 +9,11 @@
   <body ng-controller="demoCtrl">
     
     <br><br>
-    <div class="container" style="width: 500px">
+    <div class="container" style="max-width: 500px">
 
       <br>
       <h1>Nachricht</h1>
-      <div class="container" style="width: 500px">
+      <div class="container" style="max-width: 500px">
         <form role="form">
           <div class="form-group">
             
@@ -26,12 +26,15 @@
             <br>
             <br>
             <br>
-            
+           
+            <input type="radio" ng-model="message.data.link" value="" id="common">
+            <label for="common">Allgemein</label>
+            <br>
             <input type="radio" ng-model="message.data.link" value="einkaufsliste" id="einkaufsliste">
             <label for="einkaufsliste">Einkaufsliste</label>
             <br>
             <input type="radio" ng-model="message.data.link" value="payback" id="payback">
-            <label for="payback">payback</label>
+            <label for="payback">Payback</label>
             <br>
             <input type="radio" ng-model="message.data.link" value="angebote" id="angebote">
             <label for="angebote">Angebote</label>
@@ -46,7 +49,7 @@
         </form>
 
       </div>
-      <div class="container" style="width: 500px">
+      <div class="container" style="max-width: 500px">
 
         <hr/>
         <form role="form">
