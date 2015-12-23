@@ -6,11 +6,30 @@ app = angular.module("demo", []);
 
 app.controller("demoCtrl", function($scope) {
 
-    $scope.reconnect = function() {
-        $scope.g = new Guble("http://10.86.17.26:8080");
-        $scope.g.connect("webapp");
-    }
+    $scope.serverUrl = "http://10.86.19.34";
+    $scope.connected = false;
     
+    $scope.substr = function(str) {
+        return str.substring(0,13) + "...";
+    }
+
+    $scope.setMessage = function(newMessage) {
+        $scope.message =  (JSON.parse(JSON.stringify(newMessage)));
+    }
+
+    $scope.reconnect = function() {
+        if ($scope.g) {
+            $scope.g.close();            
+        }
+        $scope.connected = false;
+
+        $scope.g = new Guble($scope.serverUrl);
+        $scope.g.connect("webapp");
+        
+        $scope.g.onOpen(function() {
+            $scope.connected = true;            
+        });
+    }
     
     $scope.send = function(message) {
         $scope.g.sendMessage("/gcm/broadcast", JSON.stringify(message));
@@ -21,7 +40,7 @@ app.controller("demoCtrl", function($scope) {
             "type": "marketing",
             "data": {
                 "title": "Neue Produkte in ihrer Einkaufliste",
-                "message": "Es wurden neue Produkte zu ihrer Einkaufsliste hinzugefügt.",
+                "message": "Es wurden neue Produkte zu ihrer Einkaufsliste hinzugef\u00fcgt.",
                 "link": "einkaufsliste"
             }
         },
@@ -36,13 +55,15 @@ app.controller("demoCtrl", function($scope) {
         {
             "type": "marketing",
             "data": {
-                "title": "Neue REWE-Produkte",
+                "title": "Neue Produkte",
                 "message": "Schauen Sie doch mal in ihre Angebote - es gibt neue leckere Schmeckerlis.",
                 "link": "angebote"
             }
         }        
     ];
+
     $scope.message = $scope.predefinedMessages[0];
+    $scope.reconnect();
 });
 
 

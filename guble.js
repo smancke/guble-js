@@ -52,6 +52,12 @@ var Guble = (function () {
                 }
             });
         }
+
+        self.close = function() {
+            if (self.ws) {
+                self.ws.close();
+            }
+        }
         
         self.connect = function(userId) {
             var url = self.baseUrl
@@ -82,6 +88,10 @@ var Guble = (function () {
 
         self.sendRaw = function(rawData) {
             self.ws.send(rawData)
+        }
+
+        self.sendMessage = function(path, body, optionalHeader) {
+            self.ws.send("> "+ path + "\n"+ (optionalHeader ? optionalHeader : "") +"\n" + body);
         }
 
         self.onMessage = function(callback) {
