@@ -62,7 +62,7 @@ app.controller("demoCtrl", function($scope) {
         }        
     ];
 
-    $scope.message = $scope.predefinedMessages[0];
+    $scope.setMessage($scope.predefinedMessages[0]);
     $scope.reconnect();
 });
 
