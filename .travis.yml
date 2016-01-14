@@ -1,0 +1,27 @@
+
+language: node_js
+node_js:
+  - "iojs"
+  - "node"
+sudo: false
+cache:
+  directories:
+    - node_modules
+install:
+  - npm install
+before_script:
+  - npm run lint
+script:
+  - npm test
+deploy:
+  provider: npm
+  email: s.mancke@tarent.de
+  api_key:
+    secure: 
+  skip_cleanup: true
+  on:
+    tags: true
+before_deploy:
+  - npm run build
+after_success:
+  - npm run publish_coverage
