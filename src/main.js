@@ -12,7 +12,7 @@ class Guble {
     constructor(baseUrl) {
         this.baseUrl = baseUrl || window.location.href;
         this.ws = undefined;
-        this.onMessage = undefined;
+        this.onMessageCallback = undefined;
     }
 
     close() {
@@ -30,7 +30,7 @@ class Guble {
         var fullUrl = url + "/stream/"+userId
         console.log("[guble] connect to: "+ fullUrl)
         this.ws = new WebSocket(fullUrl)
-        this.ws.onmessage = this._handleIncomming
+        this.ws.onmessage = (msg) => this._handleIncomming(msg)
     }
 
     sendRaw(rawData) {
@@ -46,7 +46,7 @@ class Guble {
     }
 
     onMessage(callback) {
-        this.onMessage = callback
+        this.onMessageCallback = callback
     }
 
     _waitForConnection(callback, interval) {
@@ -54,8 +54,8 @@ class Guble {
             callback();
         } else {
             // optional: implement backoff for interval here
-            setTimeout(function () {
-                this.waitForConnection(callback, interval);
+            setTimeout(() => {
+                this._waitForConnection(callback, interval);
             }, interval);
         }
     }
@@ -84,13 +84,13 @@ class Guble {
     }
 
     _handleIncomming(rawMsg) {
-        this._decodeAndSplit(rawMsg.data, function(parts) {
+        this._decodeAndSplit(rawMsg.data, (parts) => {
             if (parts[0].length == 0) {
                 return
             }
             if (parts[0].match(/^#/)) {
 
-                _handleNotification(parts[0], parts.length > 1 ? parts[1] : undefined)
+                this._handleNotification(parts[0], parts.length > 1 ? parts[1] : undefined)
 
             } else if (parts[0].match(/^!/)) {
 
@@ -107,4 +107,4 @@ class Guble {
     }
 }
 
-module.exports = Guble
+export {Guble as default}

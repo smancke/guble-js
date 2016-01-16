@@ -6,6 +6,10 @@
 */
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -21,7 +25,7 @@ var Guble = (function () {
 
         this.baseUrl = baseUrl || window.location.href;
         this.ws = undefined;
-        this.onMessage = undefined;
+        this.onMessageCallback = undefined;
     }
 
     _createClass(Guble, [{
@@ -34,12 +38,16 @@ var Guble = (function () {
     }, {
         key: "connect",
         value: function connect(userId) {
+            var _this = this;
+
             var url = this.baseUrl.replace(/^https:\/\//, "wss://").replace(/^http:\/\//, "ws://").replace(/\/$/, "");
 
             var fullUrl = url + "/stream/" + userId;
             console.log("[guble] connect to: " + fullUrl);
             this.ws = new WebSocket(fullUrl);
-            this.ws.onmessage = this._handleIncomming;
+            this.ws.onmessage = function (msg) {
+                return _this._handleIncomming(msg);
+            };
         }
     }, {
         key: "sendRaw",
@@ -59,17 +67,19 @@ var Guble = (function () {
     }, {
         key: "onMessage",
         value: function onMessage(callback) {
-            this.onMessage = callback;
+            this.onMessageCallback = callback;
         }
     }, {
         key: "_waitForConnection",
         value: function _waitForConnection(callback, interval) {
+            var _this2 = this;
+
             if (this.ws && this.ws.readyState === 1) {
                 callback();
             } else {
                 // optional: implement backoff for interval here
                 setTimeout(function () {
-                    this.waitForConnection(callback, interval);
+                    _this2._waitForConnection(callback, interval);
                 }, interval);
             }
         }
@@ -103,16 +113,18 @@ var Guble = (function () {
     }, {
         key: "_handleIncomming",
         value: function _handleIncomming(rawMsg) {
+            var _this3 = this;
+
             this._decodeAndSplit(rawMsg.data, function (parts) {
                 if (parts[0].length == 0) {
                     return;
                 }
                 if (parts[0].match(/^#/)) {
 
-                    _handleNotification(parts[0], parts.length > 1 ? parts[1] : undefined);
+                    _this3._handleNotification(parts[0], parts.length > 1 ? parts[1] : undefined);
                 } else if (parts[0].match(/^!/)) {
 
-                    this._handleError(parts[0], parts.length > 1 ? parts[1] : undefined);
+                    _this3._handleError(parts[0], parts.length > 1 ? parts[1] : undefined);
                 } else {
 
                     _handleMessage(parts[0], parts.length > 1 ? parts[1] : undefined, parts.length > 2 ? parts[2] : undefined);
@@ -124,4 +136,5 @@ var Guble = (function () {
     return Guble;
 })();
 
-module.exports = Guble;
+exports["default"] = Guble;
+module.exports = exports["default"];
