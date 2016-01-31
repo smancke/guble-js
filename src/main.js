@@ -69,18 +69,18 @@ class Guble {
     }
 
     _handleMessage(meta, header, body) {
-        console.log("msg "+ meta + "\n"+header + "\n"+body);
-        if (this.onMessage) {
-            this.onMessage(meta, header, body)
+        console.log("[guble] msg "+ meta + "\n"+header + "\n"+body);
+        if (this.onMessageCallback) {
+            this.onMessageCallback(meta, header, body)
         }
     }
 
     _handleNotification(meta, header) {
-        console.log("notification "+ meta + (header? ("\n"+header) : ""));
+        console.log("[guble] notification "+ meta + (header? ("\n"+header) : ""));
     }
 
     _handleError(meta, header) {
-        console.log("error "+ meta + "\n"+header);
+        console.log("[guble] error "+ meta + "\n"+header);
     }
 
     _handleIncomming(rawMsg) {
@@ -98,7 +98,7 @@ class Guble {
 
             } else {
 
-                _handleMessage(parts[0],
+                this._handleMessage(parts[0],
                               parts.length > 1 ? parts[1] : undefined,
                               parts.length > 2 ? parts[2] : undefined)
 
